@@ -1,20 +1,34 @@
 ﻿using BookstoreAdmin.Model;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Input;
 
 namespace BookstoreAdmin.ViewModel
 {
-    class BookstoreViewModel
+    class BookstoreViewModel : BaseViewModel
     {
-        private BookstoreDbContext _dbContext;
+        private readonly BookstoreDbContext _dbContext;
 
         public ObservableCollection<Book> Books { get; set; }
+        public Book SelectedBook { get; set; }
         public ObservableCollection<Store> Stores { get; set; }
+
+
+        public ICommand AddBookCommand { get; }
+        public ICommand UpdateBookCommand { get; }
+        public ICommand DeleteBookCommand { get; }
 
         public BookstoreViewModel()
         {
             _dbContext = new BookstoreDbContext();
+
+            Books = new ObservableCollection<Book>(_dbContext.Books.ToList());
+
+            AddBookCommand = new RelayCommand(AddBook);
+            UpdateBookCommand = new RelayCommand(UpdateBook);
+            DeleteBookCommand = new RelayCommand(DeleteBook);
 
             LoadData();
         }
@@ -32,46 +46,43 @@ namespace BookstoreAdmin.ViewModel
             }
         }
 
-        public void AddBook(Book newBook)
+        public void AddBook()
         {
-            try
+            var newBook = new Book
             {
-                _dbContext.Books.Add(newBook);
+                ISBN13 = "978-0-1234-5678-9",
+                BookTitle = "New Book Title",
+                BookPrice = 9.99M,
+                BookRelease = DateTime.Now,
+                BookLanguage = _dbContext.BookLanguages.FirstOrDefault(),
+                Author = _dbContext.Authors.FirstOrDefault(),
+                Publisher = _dbContext.Publishers.FirstOrDefault()
+            };
+            _dbContext.Books.Add(newBook);
+            _dbContext.SaveChanges();
+            Books.Add(newBook);
+        }
+        public void UpdateBook()
+        {
+            if (SelectedBook != null)
+            {
                 _dbContext.SaveChanges();
-                Books.Add(newBook);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occured, the book could not be added: {ex.Message}");
             }
         }
-
-        public void RemoveBook(Book bookToRemove)
+        public void DeleteBook()
         {
-            try
+            if (SelectedBook != null)
             {
-                _dbContext.Books.Remove(bookToRemove);
+                _dbContext.Books.Remove(SelectedBook);
                 _dbContext.SaveChanges();
-                Books.Remove(bookToRemove);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occured, the book could not be removed: {ex.Message}");
+                Books.Remove(SelectedBook);
             }
         }
-
-        public void UpdateBook(Book bookToUpdate)
+        private bool CanUpdateOrDelete()
         {
-            try
-            {
-                _dbContext.Books.Update(bookToUpdate);
-                _dbContext.SaveChanges();
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occured, the book could not be updated: {ex.Message}");
-            }
+            return SelectedBook != null;
         }
+
+
     }
 }

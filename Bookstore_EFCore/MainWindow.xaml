@@ -6,7 +6,22 @@
         mc:Ignorable="d"
         Title="Bookstore Administration" Height="450" Width="800">
     <Grid>
-        <ListView ItemsSource="{Binding Books}" SelectedItem="{Binding SelectedBook}">
+        <DataGrid ItemsSource="{Binding Books}" SelectedItem="{Binding SelectedBook}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ISBN" Binding="{Binding ISBN13}"/>
+                <DataGridTextColumn Header="Title" Binding="{Binding BookTitle}"/>
+                <DataGridTextColumn Header="Price" Binding="{Binding BookPrice}"/>
+                <DataGridTextColumn Header="Release Date" Binding="{Binding BookReleaseDate}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
+            <Button Content="Add a new book" Command="{Binding AddBookCommand}" Width="100" Margin="5" />
+            <Button Content="Update Book" Command="{Binding UpdateBookCommand}" Width="100" Margin="5" />
+            <Button Content="Delete Book" Command="{Binding DeleteBookCommand}" Width="100" Margin="5" />
+        </StackPanel>
+
+        <!--<ListView ItemsSource="{Binding Books}" SelectedItem="{Binding SelectedBook}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="ISBN" DisplayMemberBinding="{Binding ISBN13}" />
@@ -14,6 +29,6 @@
                     <GridViewColumn Header="Pris" DisplayMemberBinding="{Binding BookPrice}" />
                 </GridView>
             </ListView.View>
-        </ListView>
+        </ListView>-->
     </Grid>
 </Window>
