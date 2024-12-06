@@ -4,6 +4,7 @@ using BookstoreAdmin.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookstoreAdmin.Migrations
 {
     [DbContext(typeof(BookstoreDbContext))]
-    partial class BookstoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241206155009_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,9 +78,6 @@ namespace BookstoreAdmin.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImageId")
-                        .HasColumnType("nvarchar(13)");
-
                     b.Property<int>("LanguageId")
                         .HasColumnType("int");
 
@@ -92,8 +92,6 @@ namespace BookstoreAdmin.Migrations
                     b.HasIndex("AuthorId");
 
                     b.HasIndex("BookLanguageLanguageId");
-
-                    b.HasIndex("ImageId");
 
                     b.HasIndex("LanguageId");
 
@@ -119,22 +117,6 @@ namespace BookstoreAdmin.Migrations
                     b.HasKey("LanguageId");
 
                     b.ToTable("BookLanguages");
-                });
-
-            modelBuilder.Entity("BookstoreAdmin.Model.Image", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)")
-                        .HasColumnName("ImageId");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("BookstoreAdmin.Model.InventoryBalance", b =>
@@ -242,10 +224,6 @@ namespace BookstoreAdmin.Migrations
                         .WithMany("Books")
                         .HasForeignKey("BookLanguageLanguageId");
 
-                    b.HasOne("BookstoreAdmin.Model.Image", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
-
                     b.HasOne("BookstoreAdmin.Model.BookLanguage", "Language")
                         .WithMany()
                         .HasForeignKey("LanguageId")
@@ -263,8 +241,6 @@ namespace BookstoreAdmin.Migrations
                         .HasForeignKey("PublisherId1");
 
                     b.Navigation("Author");
-
-                    b.Navigation("Image");
 
                     b.Navigation("Language");
 

@@ -6,12 +6,12 @@ namespace BookstoreAdmin.Model
     {
         [Key]
         public int AuthorId { get; set; }
-        public required string AuthorName { get; set; }
-        public required string AuthorLastName { get; set; }
+        public string AuthorName { get; set; }
+        public string AuthorLastName { get; set; }
         public string AuthorBirthCountry { get; set; }
         public DateTime AuthorBirthDate { get; set; }
         public DateTime? AuthorDeathDate { get; set; }
 
-        public List<Book> Books { get; set; }
+        public List<Book>? Books { get; set; }
     }
 }

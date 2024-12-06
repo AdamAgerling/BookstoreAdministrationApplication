@@ -13,6 +13,27 @@ namespace BookstoreAdmin.Model
         public DbSet<Publisher> Publishers { get; set; }
         public DbSet<BookLanguage> BookLanguages { get; set; }
         public DbSet<PurchaseHistory> PurchaseHistories { get; set; }
+        public DbSet<Image> Images { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Book>()
+                .HasOne(b => b.Author)
+                .WithMany(a => a.Books)
+                .HasForeignKey(b => b.AuthorId);
+
+            modelBuilder.Entity<Book>()
+               .HasOne(b => b.Publisher)
+               .WithMany()
+               .HasForeignKey(b => b.PublisherId);
+
+            modelBuilder.Entity<Book>()
+               .HasOne(b => b.Language)
+               .WithMany()
+               .HasForeignKey(b => b.LanguageId);
+        }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

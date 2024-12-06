@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookstoreAdmin.Migrations
 {
     /// <inheritdoc />
-    public partial class AddInventoryBalanceCompositeKey : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -73,13 +73,15 @@ namespace BookstoreAdmin.Migrations
                 name: "Books",
                 columns: table => new
                 {
-                    ISBN13 = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ISBN13 = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
                     BookTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BookPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     BookRelease = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AuthorId = table.Column<int>(type: "int", nullable: false),
+                    PublisherId = table.Column<int>(type: "int", nullable: false),
                     LanguageId = table.Column<int>(type: "int", nullable: false),
-                    PublisherId = table.Column<int>(type: "int", nullable: false)
+                    BookLanguageLanguageId = table.Column<int>(type: "int", nullable: true),
+                    PublisherId1 = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -90,6 +92,11 @@ namespace BookstoreAdmin.Migrations
                         principalTable: "Authors",
                         principalColumn: "AuthorId",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Books_BookLanguages_BookLanguageLanguageId",
+                        column: x => x.BookLanguageLanguageId,
+                        principalTable: "BookLanguages",
+                        principalColumn: "LanguageId");
                     table.ForeignKey(
                         name: "FK_Books_BookLanguages_LanguageId",
                         column: x => x.LanguageId,
@@ -102,6 +109,11 @@ namespace BookstoreAdmin.Migrations
                         principalTable: "Publishers",
                         principalColumn: "PublisherId",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Books_Publishers_PublisherId1",
+                        column: x => x.PublisherId1,
+                        principalTable: "Publishers",
+                        principalColumn: "PublisherId");
                 });
 
             migrationBuilder.CreateTable(
@@ -109,7 +121,7 @@ namespace BookstoreAdmin.Migrations
                 columns: table => new
                 {
                     StoreId = table.Column<int>(type: "int", nullable: false),
-                    ISBN13 = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ISBN13 = table.Column<string>(type: "nvarchar(13)", nullable: false),
                     BookQuantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -139,7 +151,7 @@ namespace BookstoreAdmin.Migrations
                     PurchaseQuantity = table.Column<int>(type: "int", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     StoreId = table.Column<int>(type: "int", nullable: false),
-                    ISBN13 = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    ISBN13 = table.Column<string>(type: "nvarchar(13)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -164,6 +176,11 @@ namespace BookstoreAdmin.Migrations
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Books_BookLanguageLanguageId",
+                table: "Books",
+                column: "BookLanguageLanguageId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Books_LanguageId",
                 table: "Books",
                 column: "LanguageId");
@@ -172,6 +189,11 @@ namespace BookstoreAdmin.Migrations
                 name: "IX_Books_PublisherId",
                 table: "Books",
                 column: "PublisherId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Books_PublisherId1",
+                table: "Books",
+                column: "PublisherId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InventoryBalances_ISBN13",

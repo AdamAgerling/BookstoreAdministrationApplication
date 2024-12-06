@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookstoreAdmin.Migrations
 {
     [DbContext(typeof(BookstoreDbContext))]
-    [Migration("20241204165615_AddInventoryBalanceCompositeKey")]
-    partial class AddInventoryBalanceCompositeKey
+    [Migration("20241206163036_RenameImageArrayToImageUrl")]
+    partial class RenameImageArrayToImageUrl
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,9 +59,13 @@ namespace BookstoreAdmin.Migrations
             modelBuilder.Entity("BookstoreAdmin.Model.Book", b =>
                 {
                     b.Property<string>("ISBN13")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<int>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BookLanguageLanguageId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("BookPrice")
@@ -80,13 +84,20 @@ namespace BookstoreAdmin.Migrations
                     b.Property<int>("PublisherId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PublisherId1")
+                        .HasColumnType("int");
+
                     b.HasKey("ISBN13");
 
                     b.HasIndex("AuthorId");
 
+                    b.HasIndex("BookLanguageLanguageId");
+
                     b.HasIndex("LanguageId");
 
                     b.HasIndex("PublisherId");
+
+                    b.HasIndex("PublisherId1");
 
                     b.ToTable("Books");
                 });
@@ -108,13 +119,28 @@ namespace BookstoreAdmin.Migrations
                     b.ToTable("BookLanguages");
                 });
 
+            modelBuilder.Entity("BookstoreAdmin.Model.Image", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
+
+                    b.Property<byte[]>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Images");
+                });
+
             modelBuilder.Entity("BookstoreAdmin.Model.InventoryBalance", b =>
                 {
                     b.Property<int>("StoreId")
                         .HasColumnType("int");
 
                     b.Property<string>("ISBN13")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<int>("BookQuantity")
                         .HasColumnType("int");
@@ -157,7 +183,7 @@ namespace BookstoreAdmin.Migrations
 
                     b.Property<string>("ISBN13")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<DateTime>("PurchaseDate")
                         .HasColumnType("datetime2");
@@ -209,21 +235,29 @@ namespace BookstoreAdmin.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookstoreAdmin.Model.BookLanguage", "BookLanguage")
+                    b.HasOne("BookstoreAdmin.Model.BookLanguage", null)
                         .WithMany("Books")
+                        .HasForeignKey("BookLanguageLanguageId");
+
+                    b.HasOne("BookstoreAdmin.Model.BookLanguage", "Language")
+                        .WithMany()
                         .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BookstoreAdmin.Model.Publisher", "Publisher")
-                        .WithMany("Books")
+                        .WithMany()
                         .HasForeignKey("PublisherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BookstoreAdmin.Model.Publisher", null)
+                        .WithMany("Books")
+                        .HasForeignKey("PublisherId1");
+
                     b.Navigation("Author");
 
-                    b.Navigation("BookLanguage");
+                    b.Navigation("Language");
 
                     b.Navigation("Publisher");
                 });

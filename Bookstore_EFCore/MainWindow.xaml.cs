@@ -8,7 +8,7 @@ namespace BookstoreAdmin
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new BookstoreViewModel();
+            DataContext = new BooksViewModel();
         }
     }
 }

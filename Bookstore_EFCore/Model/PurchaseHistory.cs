@@ -13,10 +13,10 @@ namespace BookstoreAdmin.Model
 
         [ForeignKey("Store")]
         public int StoreId { get; set; }
-        public Store Store { get; set; }
+        public required Store Store { get; set; }
 
         [ForeignKey("Book")]
-        public string ISBN13 { get; set; }
-        public Book Book { get; set; }
+        public required string ISBN13 { get; set; }
+        public required Book Book { get; set; }
     }
 }
