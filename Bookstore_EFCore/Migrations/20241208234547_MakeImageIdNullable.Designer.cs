@@ -4,6 +4,7 @@ using BookstoreAdmin.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookstoreAdmin.Migrations
 {
     [DbContext(typeof(BookstoreDbContext))]
-    partial class BookstoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241208234547_MakeImageIdNullable")]
+    partial class MakeImageIdNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,7 +79,6 @@ namespace BookstoreAdmin.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(13)");
 
                     b.Property<int>("LanguageId")
@@ -92,7 +94,8 @@ namespace BookstoreAdmin.Migrations
                     b.HasIndex("BookLanguageLanguageId");
 
                     b.HasIndex("ImageId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[ImageId] IS NOT NULL");
 
                     b.HasIndex("LanguageId");
 
@@ -240,9 +243,7 @@ namespace BookstoreAdmin.Migrations
 
                     b.HasOne("BookstoreAdmin.Model.Image", "Image")
                         .WithOne()
-                        .HasForeignKey("BookstoreAdmin.Model.Book", "ImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BookstoreAdmin.Model.Book", "ImageId");
 
                     b.HasOne("BookstoreAdmin.Model.BookLanguage", "Language")
                         .WithMany()
@@ -253,7 +254,7 @@ namespace BookstoreAdmin.Migrations
                     b.HasOne("BookstoreAdmin.Model.Publisher", "Publisher")
                         .WithMany("Books")
                         .HasForeignKey("PublisherId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Author");

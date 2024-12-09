@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookstoreAdmin.Model
 {
-    class BookstoreDbContext : DbContext
+    public class BookstoreDbContext : DbContext
     {
         public DbSet<Book> Books { get; set; }
         public DbSet<Store> Stores { get; set; }
@@ -24,14 +24,20 @@ namespace BookstoreAdmin.Model
                 .HasForeignKey(b => b.AuthorId);
 
             modelBuilder.Entity<Book>()
-               .HasOne(b => b.Publisher)
-               .WithMany()
-               .HasForeignKey(b => b.PublisherId);
+                .HasOne(b => b.Publisher)
+                .WithMany(p => p.Books)
+                .HasForeignKey(b => b.PublisherId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Book>()
-               .HasOne(b => b.Language)
-               .WithMany()
-               .HasForeignKey(b => b.LanguageId);
+                .HasOne(b => b.Language)
+                .WithMany()
+                .HasForeignKey(b => b.LanguageId);
+
+            modelBuilder.Entity<Book>()
+                .HasOne(b => b.Image)
+                .WithOne()
+                .HasForeignKey<Book>(b => b.ImageId);
         }
 
 

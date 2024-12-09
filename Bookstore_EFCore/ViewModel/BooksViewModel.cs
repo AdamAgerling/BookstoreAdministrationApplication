@@ -1,9 +1,9 @@
-﻿using BookstoreAdmin.Model;
+﻿using BookstoreAdmin.Dialog;
+using BookstoreAdmin.Model;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -39,7 +39,7 @@ namespace BookstoreAdmin.ViewModel
             }
         }
 
-        public ICommand AddBookCommand { get; }
+        public ICommand OpenAddBookDialogCommand { get; }
         public ICommand UpdateBookCommand { get; }
         public ICommand DeleteBookCommand { get; }
 
@@ -50,34 +50,38 @@ namespace BookstoreAdmin.ViewModel
             Books = new ObservableCollection<Book>(_dbContext.Books.
                 Include(b => b.Author).
                 Include(b => b.Publisher).
-                Include(b => b.Language).ToList());
+                Include(b => b.Language).
+                Include(b => b.Image).ToList());
 
-            AddBookCommand = new RelayCommand(AddBook);
+            OpenAddBookDialogCommand = new AsyncRelayCommand(OpenAddBookDialogAsync);
             UpdateBookCommand = new RelayCommand(UpdateBook);
             DeleteBookCommand = new RelayCommand(DeleteBook);
 
 
         }
 
-        private readonly string DefaultImagePath = "pack://application:,,,/Assets/no_image.png";
-
         private void LoadImageForSelectedBook()
         {
             try
             {
-                if (_selectedBook?.Image?.ImageUrl is string baseUrl
-                    && _selectedBook?.Image?.Id is string imageId
-                    && !string.IsNullOrWhiteSpace(baseUrl)
-                    && !string.IsNullOrWhiteSpace(imageId))
+                if (_selectedBook?.Image != null
+                    && !string.IsNullOrWhiteSpace(_selectedBook.Image.ImageUrl)
+                    && !string.IsNullOrWhiteSpace(_selectedBook.Image.ImageId))
                 {
-                    // FUNGERAR INTE ÄN HMM 
-                    var fullUrl = $"{baseUrl}{imageId}";
+                    var fullUrl = $"{_selectedBook.Image.ImageUrl.TrimEnd('/')}/{_selectedBook.Image.ImageId.Trim()}";
                     Debug.WriteLine($"Loading book image from URL: {fullUrl}");
-                    BookImage = new BitmapImage(new Uri(fullUrl, UriKind.Absolute));
+
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(fullUrl, UriKind.Absolute);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                    bitmap.EndInit();
+                    BookImage = bitmap;
                 }
                 else
                 {
-                    Debug.WriteLine("Loading default image.");
+                    Debug.WriteLine($"Missing image data, loading default image.");
                     BookImage = new BitmapImage(new Uri("pack://application:,,,/Assets/no_image.png"));
                 }
             }
@@ -88,27 +92,34 @@ namespace BookstoreAdmin.ViewModel
             }
         }
 
-        public void AddBook()
+        public async Task OpenAddBookDialogAsync()
         {
-            if (!_dbContext.Authors.Any() || !_dbContext.BookLanguages.Any() || !_dbContext.Publishers.Any())
-            {
-                MessageBox.Show("NOT ENOUGH INFORMATION GIVEN");
-                return;
-            }
+            var authors = new ObservableCollection<Author>(_dbContext.Authors.ToList());
+            var publishers = new ObservableCollection<Publisher>(_dbContext.Publishers.ToList());
+            var languages = new ObservableCollection<BookLanguage>(_dbContext.BookLanguages.ToList());
 
-            var newBook = new Book
+            var tcs = new TaskCompletionSource<Book>();
+            var dialogViewModel = new AddNewBookDialogViewModel(authors, publishers, languages, tcs);
+
+            dialogViewModel.BookCreated += book =>
             {
-                ISBN13 = "978-0-1234-5678-9",
-                BookTitle = "New Book Title",
-                BookPrice = 9.99M,
-                BookRelease = DateTime.Now,
-                Language = _dbContext.BookLanguages.First(),
-                Author = _dbContext.Authors.First(),
-                Publisher = _dbContext.Publishers.First()
+                Books.Add(book);
+                Debug.WriteLine($"Book added to observable collection: {book.ISBN13}");
             };
-            _dbContext.Books.Add(newBook);
-            _dbContext.SaveChanges();
-            Books.Add(newBook);
+
+            var dialog = new AddNewBookDialog
+            {
+                DataContext = dialogViewModel
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                Debug.WriteLine("Dialog returned true.");
+            }
+            else
+            {
+                Debug.WriteLine("Dialog was canceled.");
+            }
         }
 
         public void UpdateBook()

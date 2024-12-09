@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using BookstoreAdmin.ViewModel;
+using System.Windows;
 
 namespace BookstoreAdmin.Dialog
 {
@@ -7,20 +8,15 @@ namespace BookstoreAdmin.Dialog
         public AddNewBookDialog()
         {
             InitializeComponent();
+            Closing += AddNewBookDialog_Closing;
         }
 
-        private void AddNewBookHandler(object sender, RoutedEventArgs e)
+        private void AddNewBookDialog_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
-
-            DialogResult = true;
-            Close();
-        }
-
-        private void CancelCloseHandler(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-            Close();
+            if (DataContext is AddNewBookDialogViewModel dialog)
+            {
+                dialog.Cancel();
+            }
         }
 
     }

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:BookstoreAdmin.View"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" FontSize="18">
 
     <Grid Background="#333">
         <Grid.ColumnDefinitions>
@@ -13,44 +13,68 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <ListBox Background="#333" Grid.Column="0" Margin="5 0" 
-               ItemsSource="{Binding Books}" 
-               SelectedItem="{Binding SelectedBook, Mode=TwoWay}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel>
-                        <TextBlock Foreground="White" Text="{Binding BookTitle}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Grid Grid.Column="0" Margin="5 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <StackPanel Grid.Column="1" Margin="10">
-            <TextBlock Foreground="White" FontSize="14" FontWeight="Bold" Text="Book Details"/>
-            <WrapPanel Margin="10 10" Width="100" Height="150" HorizontalAlignment="Left">
-                <Image Source="{Binding BookImage}"
-                       Width="100" Height="150" Stretch="Uniform" />
+            <ListBox Background="#333" Margin="0 0 0 10"
+                 ItemsSource="{Binding Books}" 
+                 SelectedItem="{Binding SelectedBook, Mode=TwoWay}" 
+                 Grid.Row="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Foreground="White" Text="{Binding BookTitle}" FontSize="16"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Button Content="Add Book" Command="{Binding OpenAddBookDialogCommand}" 
+                Margin="10 10" Padding="5" Grid.Row="1"/>
+        </Grid>
+
+        <StackPanel Grid.Column="1" Margin="10 10" Visibility="{Binding SelectedBook}">
+            <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding SelectedBook.BookTitle}" Margin="0 0 0 5"/>
+            <WrapPanel>
+                <TextBlock Foreground="White" Text="{Binding SelectedBook.Author.AuthorName}" FontSize="16"/>
+                <TextBlock Foreground="White" Text="{Binding SelectedBook.Author.AuthorLastName}" Margin="5 0 0 0" FontSize="16"/>
             </WrapPanel>
-            <TextBlock Foreground="White" Text="Title:"/>
-            <TextBlock Foreground="White" Text="{Binding SelectedBook.BookTitle}"/>
 
-            <TextBlock Foreground="White" Text="Author:"/>
-            <TextBlock Foreground="White" Text="{Binding SelectedBook.Author.AuthorName}"/>
+            <Grid Margin="0 0 10 10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-            <TextBlock Foreground="White" Text="Publisher:"/>
-            <TextBlock Foreground="White" Text="{Binding SelectedBook.Publisher.PublisherName}"/>
+                <WrapPanel Grid.Column="0" Width="250" Height="365" HorizontalAlignment="Left">
+                    <Image Source="{Binding BookImage}" Width="250" Height="365" Stretch="UniformToFill" />
+                </WrapPanel>
 
-            <TextBlock Foreground="White" Text="Language:"/>
-            <TextBlock Foreground="White" Text="{Binding SelectedBook.Language.LanguageName}"/>
+                <StackPanel Grid.Column="1" Margin="10 0 0 0">
+                    <WrapPanel>
+                        <TextBlock Foreground="White" Text="ISBN:" Margin="10 0 0 0"/>
+                        <TextBlock Foreground="White" Text="{Binding SelectedBook.ISBN13}"  Margin="5 0"/>
+                    </WrapPanel>
 
-            <TextBlock Foreground="White" Text="Price:"/>
-            <TextBlock Foreground="White" Text="{Binding SelectedBook.BookPrice, StringFormat='{}{0:C}'}"/>
-        </StackPanel>
+                    <WrapPanel Margin="10 50 0 10">
+                        <TextBlock Foreground="White" Text="Publisher:"/>
+                        <TextBlock Foreground="White" Text="{Binding SelectedBook.Publisher.PublisherName}" Margin="10 0"/>
+                    </WrapPanel>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
-            <Button Content="Add a new book" Command="{Binding AddBookCommand}" Width="100" Margin="5"/>
-            <Button Content="Update Book" Command="{Binding UpdateBookCommand}" Width="100" Margin="5"/>
-            <Button Content="Delete Book" Command="{Binding DeleteBookCommand}" Width="100" Margin="5"/>
+                    <WrapPanel Margin="10 50 0 10">
+                        <TextBlock Foreground="White" Text="Language:" />
+                        <TextBlock Foreground="White" Text="{Binding SelectedBook.Language.LanguageName}" Margin="10 0"/>
+                    </WrapPanel>
+
+                    <WrapPanel Margin="10 50 0 10">
+                        <TextBlock Foreground="White" Text="Price:" />
+                        <TextBlock Foreground="White" Text="{Binding SelectedBook.BookPrice, StringFormat='{}{0:C}'}" Margin="10 0"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Grid>
         </StackPanel>
     </Grid>
 </UserControl>

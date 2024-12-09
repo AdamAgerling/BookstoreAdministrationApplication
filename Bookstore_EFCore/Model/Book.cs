@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookstoreAdmin.Model
 {
@@ -22,6 +23,9 @@ namespace BookstoreAdmin.Model
 
         public int LanguageId { get; set; }
         public BookLanguage Language { get; set; }
+
+        public string ImageId { get; set; }
+        [ForeignKey("ImageId")]
         public Image Image { get; set; }
     }
 }

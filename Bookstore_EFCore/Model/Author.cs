@@ -12,6 +12,8 @@ namespace BookstoreAdmin.Model
         public DateTime AuthorBirthDate { get; set; }
         public DateTime? AuthorDeathDate { get; set; }
 
+        public string FullName => $"{AuthorName} {AuthorLastName}";
+
         public List<Book>? Books { get; set; }
     }
 }
