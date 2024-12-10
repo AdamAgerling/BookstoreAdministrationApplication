@@ -4,6 +4,7 @@ using BookstoreAdmin.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookstoreAdmin.Migrations
 {
     [DbContext(typeof(BookstoreDbContext))]
-    partial class BookstoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241210110428_UpdateBookWithInventoryBalances")]
+    partial class UpdateBookWithInventoryBalances
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

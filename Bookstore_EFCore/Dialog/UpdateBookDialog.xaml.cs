@@ -2,9 +2,12 @@
 
 namespace BookstoreAdmin.Dialog
 {
-    public partial class AddNewBookDialog : Window
+    /// <summary>
+    /// Interaction logic for UpdateBookDialog.xaml
+    /// </summary>
+    public partial class UpdateBookDialog : Window
     {
-        public AddNewBookDialog()
+        public UpdateBookDialog()
         {
             InitializeComponent();
         }

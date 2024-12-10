@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace BookstoreAdmin.ViewModel
 {
-    internal class AddNewBookDialogViewModel : BaseViewModel
+    public class AddNewBookDialogViewModel : BaseViewModel
     {
         private string _newBookISBN;
         private string _newBookTitle;
@@ -132,7 +132,6 @@ namespace BookstoreAdmin.ViewModel
         }
 
         public ICommand CreateBookCommand { get; }
-        public ICommand CancelCommand { get; }
 
         public AddNewBookDialogViewModel(
             ObservableCollection<Author> authors,
@@ -155,7 +154,6 @@ namespace BookstoreAdmin.ViewModel
 
 
             CreateBookCommand = new RelayCommand(CreateBook, CanCreateBook);
-            CancelCommand = new RelayCommand(Cancel);
         }
 
         private async void CreateBook()
@@ -226,21 +224,6 @@ namespace BookstoreAdmin.ViewModel
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error in CreateBook: {ex.Message}");
-            }
-        }
-
-        public void Cancel()
-        {
-            Debug.WriteLine("Cancel command executed.");
-
-            if (!_tcs.Task.IsCompleted)
-            {
-                Debug.WriteLine("Setting null result for TaskCompletionSource.");
-                _tcs.SetResult(null);
-            }
-            else
-            {
-                Debug.WriteLine("TaskCompletionSource is already completed.");
             }
         }
 

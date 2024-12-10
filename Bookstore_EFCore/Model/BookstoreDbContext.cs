@@ -38,6 +38,17 @@ namespace BookstoreAdmin.Model
                 .HasOne(b => b.Image)
                 .WithOne()
                 .HasForeignKey<Book>(b => b.ImageId);
+
+            modelBuilder.Entity<InventoryBalance>()
+               .HasOne(ib => ib.Book)
+               .WithMany(b => b.InventoryBalances)
+               .HasForeignKey(ib => ib.ISBN13);
+
+            modelBuilder.Entity<InventoryBalance>()
+               .HasOne(ib => ib.Store)
+               .WithMany(s => s.InventoryBalances)
+               .HasForeignKey(ib => ib.StoreId);
+
         }
 
 

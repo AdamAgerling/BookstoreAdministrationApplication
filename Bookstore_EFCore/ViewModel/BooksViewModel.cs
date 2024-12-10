@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -14,6 +15,18 @@ namespace BookstoreAdmin.ViewModel
     {
         private readonly BookstoreDbContext _dbContext;
         private Book _selectedBook;
+        private ObservableCollection<InventoryBalance> _inventoryBalances;
+
+        public ObservableCollection<InventoryBalance> InventoryBalances
+        {
+            get => _inventoryBalances;
+            set
+            {
+                _inventoryBalances = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ObservableCollection<Book> Books { get; set; }
         public Book SelectedBook
         {
@@ -22,7 +35,10 @@ namespace BookstoreAdmin.ViewModel
             {
                 _selectedBook = value;
                 OnPropertyChanged(nameof(SelectedBook));
+                (DeleteBookCommand as RelayCommand)?.NotifyCanExecuteChanged();
+                OnPropertyChanged(nameof(InventoryBalances));
                 LoadImageForSelectedBook();
+                LoadStoreInventoryForSelectedBook();
             }
         }
 
@@ -40,7 +56,7 @@ namespace BookstoreAdmin.ViewModel
         }
 
         public ICommand OpenAddBookDialogCommand { get; }
-        public ICommand UpdateBookCommand { get; }
+        public ICommand OpenUpdateBookDialogCommand { get; }
         public ICommand DeleteBookCommand { get; }
 
         public BooksViewModel()
@@ -54,10 +70,21 @@ namespace BookstoreAdmin.ViewModel
                 Include(b => b.Image).ToList());
 
             OpenAddBookDialogCommand = new AsyncRelayCommand(OpenAddBookDialogAsync);
-            UpdateBookCommand = new RelayCommand(UpdateBook);
-            DeleteBookCommand = new RelayCommand(DeleteBook);
+            OpenUpdateBookDialogCommand = new AsyncRelayCommand(OpenUpdateBookDialogAsync);
+            DeleteBookCommand = new RelayCommand(DeleteBook, CanDeleteBook);
+        }
 
-
+        private void LoadStoreInventoryForSelectedBook()
+        {
+            if (SelectedBook != null)
+            {
+                InventoryBalances = new ObservableCollection<InventoryBalance>(
+                    _dbContext.InventoryBalances.Include(ib => ib.Store).Where(ib => ib.ISBN13 == SelectedBook.ISBN13).ToList());
+            }
+            else
+            {
+                InventoryBalances = new ObservableCollection<InventoryBalance>();
+            }
         }
 
         private void LoadImageForSelectedBook()
@@ -122,24 +149,99 @@ namespace BookstoreAdmin.ViewModel
             }
         }
 
-        public void UpdateBook()
+        public async Task OpenUpdateBookDialogAsync()
         {
-            if (SelectedBook != null)
+            if (SelectedBook == null)
             {
-                _dbContext.SaveChanges();
+                MessageBox.Show("Please select a book to update.", "No book selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var tcs = new TaskCompletionSource<Book>();
+            var dialogViewModel = new UpdateBookDialogViewModel(SelectedBook,
+                new ObservableCollection<Author>(_dbContext.Authors.ToList()),
+                new ObservableCollection<Publisher>(_dbContext.Publishers.ToList()),
+                new ObservableCollection<BookLanguage>(_dbContext.BookLanguages.ToList()),
+                tcs);
+
+            var dialog = new UpdateBookDialog
+            {
+                DataContext = dialogViewModel
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var updatedBook = await tcs.Task;
+                if (updatedBook != null)
+                {
+                    try
+                    {
+
+                        var bookToUpdate = _dbContext.Books.Include(b => b.Image).FirstOrDefault(b => b.ISBN13 == updatedBook.ISBN13);
+                        if (bookToUpdate != null)
+                        {
+                            bookToUpdate.BookTitle = updatedBook.BookTitle;
+                            bookToUpdate.BookPrice = updatedBook.BookPrice;
+                            bookToUpdate.BookRelease = updatedBook.BookRelease;
+                            bookToUpdate.Author = updatedBook.Author;
+                            bookToUpdate.Publisher = updatedBook.Publisher;
+                            bookToUpdate.Language = updatedBook.Language;
+                            bookToUpdate.Image = bookToUpdate.Image;
+
+                            await _dbContext.SaveChangesAsync();
+                            MessageBox.Show($"The book \"{bookToUpdate.BookTitle}\" has been updated.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                            var index = Books.IndexOf(SelectedBook);
+                            if (index >= 0)
+                            {
+                                Books[index] = bookToUpdate;
+                                SelectedBook = bookToUpdate;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"An error occurred while updating the book: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Update dialog was canceled.");
             }
         }
 
-        public void DeleteBook()
+        private void DeleteBook()
         {
-            if (SelectedBook != null)
+            if (SelectedBook == null)
+                return;
+
+            var result = MessageBox.Show(
+                $"Are you sure you want to delete the book '{SelectedBook.BookTitle}'?",
+                "Delete Book",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
             {
-                _dbContext.Books.Remove(SelectedBook);
-                _dbContext.SaveChanges();
-                Books.Remove(SelectedBook);
+                try
+                {
+                    _dbContext.Books.Remove(SelectedBook);
+                    _dbContext.SaveChanges();
+
+                    Books.Remove(SelectedBook);
+
+                    MessageBox.Show("Book deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    SelectedBook = null;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred while deleting the book: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
-        private bool CanUpdateOrDelete()
+
+        private bool CanDeleteBook()
         {
             return SelectedBook != null;
         }

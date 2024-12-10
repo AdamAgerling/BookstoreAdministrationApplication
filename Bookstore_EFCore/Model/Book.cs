@@ -27,5 +27,7 @@ namespace BookstoreAdmin.Model
         public string ImageId { get; set; }
         [ForeignKey("ImageId")]
         public Image Image { get; set; }
+
+        public ICollection<InventoryBalance> InventoryBalances { get; set; }
     }
 }
