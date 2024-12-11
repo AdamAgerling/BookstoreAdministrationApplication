@@ -2,9 +2,9 @@
 
 namespace BookstoreAdmin.Dialog
 {
-    public partial class AddNewBookDialog : Window
+    public partial class ManageStockDialog : Window
     {
-        public AddNewBookDialog()
+        public ManageStockDialog()
         {
             InitializeComponent();
         }

@@ -1,5 +1,4 @@
-﻿using BookstoreAdmin.ViewModel;
-using System.Windows;
+﻿using System.Windows;
 
 namespace BookstoreAdmin
 {
@@ -8,7 +7,6 @@ namespace BookstoreAdmin
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new BooksViewModel();
         }
     }
 }

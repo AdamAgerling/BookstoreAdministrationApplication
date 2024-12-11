@@ -28,6 +28,7 @@ namespace BookstoreAdmin.ViewModel
         }
 
         public ObservableCollection<Book> Books { get; set; }
+
         public Book SelectedBook
         {
             get => _selectedBook;
@@ -56,6 +57,8 @@ namespace BookstoreAdmin.ViewModel
         }
 
         public ICommand OpenAddBookDialogCommand { get; }
+        public ICommand AddBookToStockDialogCommand { get; }
+        public ICommand RemoveFromBookStockDialogCommand { get; }
         public ICommand OpenUpdateBookDialogCommand { get; }
         public ICommand DeleteBookCommand { get; }
 
@@ -71,7 +74,65 @@ namespace BookstoreAdmin.ViewModel
 
             OpenAddBookDialogCommand = new AsyncRelayCommand(OpenAddBookDialogAsync);
             OpenUpdateBookDialogCommand = new AsyncRelayCommand(OpenUpdateBookDialogAsync);
+            AddBookToStockDialogCommand = new AsyncRelayCommand(() => OpenManageStockDialogAsync(false));
+            RemoveFromBookStockDialogCommand = new AsyncRelayCommand(() => OpenManageStockDialogAsync(true));
             DeleteBookCommand = new RelayCommand(DeleteBook, CanDeleteBook);
+        }
+
+        private async Task OpenManageStockDialogAsync(bool isRemovingStock)
+        {
+            if (SelectedBook == null)
+            {
+                MessageBox.Show($"Please select a book to {(isRemovingStock ? "remove from" : "add to")} stock.", "No book selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var stores = new ObservableCollection<Store>(_dbContext.Stores.ToList());
+            var tcs = new TaskCompletionSource<InventoryBalance>();
+            var dialogViewModel = new AddBookToStockDialogViewModel(stores, SelectedBook.ISBN13, tcs, isRemovingStock);
+
+            var dialog = new ManageStockDialog
+            {
+                DataContext = dialogViewModel
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var inventoryUpdate = await tcs.Task;
+
+                var inventory = _dbContext.InventoryBalances
+                    .FirstOrDefault(i => i.ISBN13 == inventoryUpdate.ISBN13 && i.StoreId == inventoryUpdate.StoreId);
+
+                if (inventory != null)
+                {
+                    inventory.BookQuantity = Math.Max(0, inventory.BookQuantity + inventoryUpdate.BookQuantity);
+                }
+                else if (!isRemovingStock)
+                {
+                    inventoryUpdate.BookQuantity = Math.Max(0, inventoryUpdate.BookQuantity);
+                    _dbContext.InventoryBalances.Add(inventoryUpdate);
+                }
+                else
+                {
+                    MessageBox.Show("No matching inventory found for this store and book.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                try
+                {
+                    await _dbContext.SaveChangesAsync();
+                    LoadStoreInventoryForSelectedBook();
+                    MessageBox.Show($"Stock {(isRemovingStock ? "removed" : "added")} successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred while updating stock: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Stock management dialog was canceled.");
+            }
         }
 
         private void LoadStoreInventoryForSelectedBook()
@@ -240,7 +301,6 @@ namespace BookstoreAdmin.ViewModel
                 }
             }
         }
-
         private bool CanDeleteBook()
         {
             return SelectedBook != null;

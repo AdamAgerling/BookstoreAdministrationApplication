@@ -9,6 +9,7 @@ namespace BookstoreAdmin.Model
         public string StoreName { get; set; }
         public string StoreStreetAddress { get; set; }
 
+        public string StoreNameAndStreet => $"{StoreName}, {StoreStreetAddress}";
         public List<InventoryBalance> InventoryBalances { get; set; }
         public List<PurchaseHistory> PurchaseHistories { get; set; }
     }

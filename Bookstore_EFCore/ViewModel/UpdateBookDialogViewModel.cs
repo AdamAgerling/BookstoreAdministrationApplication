@@ -49,7 +49,6 @@ namespace BookstoreAdmin.ViewModel
 
         private void UpdateBook(Window window)
         {
-
             if (string.IsNullOrWhiteSpace(NewBookTitle) || SelectedAuthor == null || SelectedPublisher == null || SelectedBookLanguage == null)
             {
                 MessageBox.Show("All fields must be filled to update the book.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
