@@ -118,8 +118,8 @@
                 </DataGrid.Columns>
             </DataGrid>
             <WrapPanel Margin="0 10" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                <Button Content="Add to store" Command="{Binding AddBookToStockDialogCommand}" Margin="10 0 0 0"/>
-                <Button Content="Remove from Stock" Command="{Binding RemoveFromBookStockDialogCommand}" Margin="10 0 0 0" />
+                <Button Content="Add to stock" Command="{Binding AddBookToStockDialogCommand}" Margin="10 0 0 0"/>
+                <Button Content="Remove from stock" Command="{Binding RemoveFromBookStockDialogCommand}" Margin="10 0 0 0" />
             </WrapPanel>
         </StackPanel>
     </Grid>

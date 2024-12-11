@@ -43,8 +43,6 @@ namespace BookstoreAdmin.ViewModel
             }
         }
 
-        public ObservableCollection<Store> Stores { get; set; }
-
         private ImageSource _bookImage;
         public ImageSource BookImage
         {
