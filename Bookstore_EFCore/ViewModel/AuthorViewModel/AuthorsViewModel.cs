@@ -16,8 +16,18 @@ namespace BookstoreAdmin.ViewModel.AuthorViewModel
         private ObservableCollection<Book> _selectedAuthorBooks;
 
         public string DeathDateText => SelectedAuthor != null && SelectedAuthor.AuthorDeathDate.HasValue ? "Died: " : string.Empty;
-        public string DeathAtAge => SelectedAuthor != null && SelectedAuthor.AuthorDeathDate.HasValue ? $"Dead at age {AuthorAge}" : $"{AuthorAge}";
+        public string DeathAtAge
+        {
+            get
+            {
+                if (SelectedAuthor == null)
+                    return string.Empty;
 
+                return SelectedAuthor.AuthorDeathDate.HasValue
+                    ? $"{AuthorAge} (Dead)"
+                    : $"{AuthorAge}";
+            }
+        }
         public string BookTitles => SelectedAuthor != null
           ? $"{SelectedAuthor.AuthorName} {SelectedAuthor.AuthorLastName}'s books in our system"
           : "No author selected";
@@ -55,6 +65,7 @@ namespace BookstoreAdmin.ViewModel.AuthorViewModel
                 OnPropertyChanged(nameof(BookTitles));
                 OnPropertyChanged(nameof(AuthorAge));
                 OnPropertyChanged(nameof(DeathDateText));
+                OnPropertyChanged(nameof(DeathAtAge));
                 UpdateSelectedAuthorBooks();
             }
         }
