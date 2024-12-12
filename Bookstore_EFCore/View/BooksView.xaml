@@ -96,6 +96,7 @@
                       HorizontalAlignment="Stretch" 
                       VerticalAlignment="Stretch" 
                       ColumnWidth="*" 
+                      IsReadOnly="True"
                       HeadersVisibility="Column">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Store" Binding="{Binding Store.StoreName}"/>

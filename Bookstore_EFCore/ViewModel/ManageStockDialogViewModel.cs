@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace BookstoreAdmin.ViewModel
 {
-    class AddBookToStockDialogViewModel : BaseViewModel
+    class ManageStockDialogViewModel : BaseViewModel
     {
         private readonly TaskCompletionSource<InventoryBalance> _tcs;
         private readonly string _isbn13;
@@ -20,7 +20,7 @@ namespace BookstoreAdmin.ViewModel
 
         public ICommand UpdateStockCommand { get; }
 
-        public AddBookToStockDialogViewModel(ObservableCollection<Store> stores, string isbn13, TaskCompletionSource<InventoryBalance> tcs, bool isRemovingStock = false)
+        public ManageStockDialogViewModel(ObservableCollection<Store> stores, string isbn13, TaskCompletionSource<InventoryBalance> tcs, bool isRemovingStock = false)
         {
             Stores = stores;
             _isbn13 = isbn13;

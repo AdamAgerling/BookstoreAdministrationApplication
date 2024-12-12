@@ -174,6 +174,7 @@ namespace BookstoreAdmin.ViewModel
                     using (var db = new BookstoreDbContext())
                     {
                         var image = await db.Images.FindAsync(NewBookISBN);
+
                         if (image == null)
                         {
                             Debug.WriteLine("Image not found in database. Cannot create book.");

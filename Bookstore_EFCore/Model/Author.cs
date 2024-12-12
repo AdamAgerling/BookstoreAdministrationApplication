@@ -9,7 +9,7 @@ namespace BookstoreAdmin.Model
         public string AuthorName { get; set; }
         public string AuthorLastName { get; set; }
         public string AuthorBirthCountry { get; set; }
-        public DateTime AuthorBirthDate { get; set; }
+        public DateTime? AuthorBirthDate { get; set; }
         public DateTime? AuthorDeathDate { get; set; }
 
         public string FullName => $"{AuthorName} {AuthorLastName}";

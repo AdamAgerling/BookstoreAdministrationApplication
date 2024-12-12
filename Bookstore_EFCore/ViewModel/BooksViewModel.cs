@@ -68,7 +68,7 @@ namespace BookstoreAdmin.ViewModel
                 Include(b => b.Author).
                 Include(b => b.Publisher).
                 Include(b => b.Language).
-                Include(b => b.Image).ToList());
+                Include(b => b.Image).OrderBy(b => b.BookTitle).ToList());
 
             OpenAddBookDialogCommand = new AsyncRelayCommand(OpenAddBookDialogAsync);
             OpenUpdateBookDialogCommand = new AsyncRelayCommand(OpenUpdateBookDialogAsync);
@@ -87,7 +87,7 @@ namespace BookstoreAdmin.ViewModel
 
             var stores = new ObservableCollection<Store>(_dbContext.Stores.ToList());
             var tcs = new TaskCompletionSource<InventoryBalance>();
-            var dialogViewModel = new AddBookToStockDialogViewModel(stores, SelectedBook.ISBN13, tcs, isRemovingStock);
+            var dialogViewModel = new ManageStockDialogViewModel(stores, SelectedBook.ISBN13, tcs, isRemovingStock);
 
             var dialog = new ManageStockDialog
             {
@@ -191,6 +191,7 @@ namespace BookstoreAdmin.ViewModel
             {
                 Books.Add(book);
                 Debug.WriteLine($"Book added to observable collection: {book.ISBN13}");
+                SelectedBook = book;
             };
 
             var dialog = new AddNewBookDialog
@@ -253,6 +254,7 @@ namespace BookstoreAdmin.ViewModel
                             var index = Books.IndexOf(SelectedBook);
                             if (index >= 0)
                             {
+                                Books[index] = null;
                                 Books[index] = bookToUpdate;
                                 SelectedBook = bookToUpdate;
                             }
