@@ -1,10 +1,10 @@
 ﻿using System.Windows;
 
-namespace BookstoreAdmin.Dialog
+namespace BookstoreAdmin.Dialog.Author
 {
-    public partial class UpdateBookDialog : Window
+    public partial class AddNewAuthorDialog : Window
     {
-        public UpdateBookDialog()
+        public AddNewAuthorDialog()
         {
             InitializeComponent();
         }

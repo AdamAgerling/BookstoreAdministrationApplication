@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
-namespace BookstoreAdmin.ViewModel
+namespace BookstoreAdmin.ViewModel.AuthorViewModel
 {
     class AddNewAuthorDialogViewModel : BaseViewModel
     {

@@ -1,4 +1,4 @@
-﻿using BookstoreAdmin.Dialog;
+﻿using BookstoreAdmin.Dialog.Book;
 using BookstoreAdmin.Model;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace BookstoreAdmin.ViewModel
+namespace BookstoreAdmin.ViewModel.BookViewModel
 {
     class BooksViewModel : BaseViewModel
     {

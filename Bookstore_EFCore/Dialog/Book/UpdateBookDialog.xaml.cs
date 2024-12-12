@@ -1,13 +1,14 @@
 ﻿using System.Windows;
 
-namespace BookstoreAdmin.Dialog
+namespace BookstoreAdmin.Dialog.Book
 {
-    public partial class ManageStockDialog : Window
+    public partial class UpdateBookDialog : Window
     {
-        public ManageStockDialog()
+        public UpdateBookDialog()
         {
             InitializeComponent();
         }
+
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;

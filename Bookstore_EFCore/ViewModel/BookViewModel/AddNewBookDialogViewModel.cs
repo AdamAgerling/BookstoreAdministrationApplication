@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
-namespace BookstoreAdmin.ViewModel
+namespace BookstoreAdmin.ViewModel.BookViewModel
 {
     public class AddNewBookDialogViewModel : BaseViewModel
     {

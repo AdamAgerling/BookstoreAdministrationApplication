@@ -1,5 +1,4 @@
-﻿using BookstoreAdmin.Dialog;
-using BookstoreAdmin.Dialog.Author;
+﻿using BookstoreAdmin.Dialog.Author;
 using BookstoreAdmin.Model;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
@@ -8,13 +7,16 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
-namespace BookstoreAdmin.ViewModel
+namespace BookstoreAdmin.ViewModel.AuthorViewModel
 {
     internal class AuthorsViewModel : BaseViewModel
     {
         private readonly BookstoreDbContext _dbContext;
         private Author _selectedAuthor;
-        public string DeathDateText => SelectedAuthor != null && SelectedAuthor.AuthorDeathDate.HasValue ? "Death Date: " : string.Empty;
+        private ObservableCollection<Book> _selectedAuthorBooks;
+
+        public string DeathDateText => SelectedAuthor != null && SelectedAuthor.AuthorDeathDate.HasValue ? "Died: " : string.Empty;
+        public string DeathAtAge => SelectedAuthor != null && SelectedAuthor.AuthorDeathDate.HasValue ? $"Dead at age {AuthorAge}" : $"{AuthorAge}";
 
         public string BookTitles => SelectedAuthor != null
           ? $"{SelectedAuthor.AuthorName} {SelectedAuthor.AuthorLastName}'s books in our system"
@@ -53,10 +55,20 @@ namespace BookstoreAdmin.ViewModel
                 OnPropertyChanged(nameof(BookTitles));
                 OnPropertyChanged(nameof(AuthorAge));
                 OnPropertyChanged(nameof(DeathDateText));
+                UpdateSelectedAuthorBooks();
             }
         }
 
-        public ObservableCollection<Book> SelectedAuhorBooks => new ObservableCollection<Book>(SelectedAuthor?.Books ?? new List<Book>());
+        public ObservableCollection<Book> SelectedAuthorBooks
+        {
+            get => _selectedAuthorBooks;
+            set
+            {
+                _selectedAuthorBooks = value;
+                OnPropertyChanged(nameof(SelectedAuthorBooks));
+            }
+        }
+
         public ICommand DeleteAuthorCommand { get; }
         public ICommand OpenAddAuthorDialogCommand { get; }
         public ICommand OpenUpdateAuthorDialogCommand { get; }
@@ -74,6 +86,13 @@ namespace BookstoreAdmin.ViewModel
             DeleteAuthorCommand = new RelayCommand(DeleteAuthor, CanDeleteAuthor);
             OpenAddAuthorDialogCommand = new AsyncRelayCommand(OpenAddAuthorDialogAsync);
             OpenUpdateAuthorDialogCommand = new AsyncRelayCommand(OpenUpdateAuthorDialogAsync);
+        }
+
+        private void UpdateSelectedAuthorBooks()
+        {
+            SelectedAuthorBooks = SelectedAuthor != null
+                ? new ObservableCollection<Book>(SelectedAuthor.Books)
+                : new ObservableCollection<Book>();
         }
 
         private async Task OpenAddAuthorDialogAsync()

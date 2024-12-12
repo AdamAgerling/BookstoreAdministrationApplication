@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace BookstoreAdmin.Dialog
+namespace BookstoreAdmin.Dialog.Book
 {
     public partial class AddNewBookDialog : Window
     {

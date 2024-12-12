@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Windows;
 using System.Windows.Input;
 
-namespace BookstoreAdmin.ViewModel
+namespace BookstoreAdmin.ViewModel.AuthorViewModel
 {
     internal class UpdateAuthorDialogViewModel : BaseViewModel
     {
