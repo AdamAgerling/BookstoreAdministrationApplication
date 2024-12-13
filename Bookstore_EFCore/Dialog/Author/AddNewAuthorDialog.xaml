@@ -14,7 +14,6 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <StackPanel Margin="10 10">
@@ -34,17 +33,17 @@
             <TextBox Text="{Binding NewAuthorBirthCountry, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
 
-        <StackPanel Margin="10 10" Grid.Row="4">
-            <TextBlock Foreground="White" Text="Birthdate (*):" Margin="1 0 10 2" FontWeight="Bold"/>
+        <StackPanel Margin="10 10" Grid.Row="3">
+            <TextBlock Foreground="White" Text="Born (*):" Margin="1 0 10 2" FontWeight="Bold"/>
             <DatePicker SelectedDate="{Binding NewAuthorBirthDate, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
         
-        <StackPanel Margin="10 10" Grid.Row="5">
+        <StackPanel Margin="10 10" Grid.Row="4">
             <TextBlock Foreground="White" Text="Died: (Skip if not dead)" Margin="1 0 10 2" FontWeight="Bold"/>
             <DatePicker SelectedDate="{Binding NewAuthorBookRelease, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
 
-        <WrapPanel Margin="0 15" Grid.Row="6" HorizontalAlignment="Center">
+        <WrapPanel Margin="0 15" Grid.Row="5" HorizontalAlignment="Center">
             <Button Content="Cancel" Click="CancelButton_Click" 
                     Margin="0 0 30 0" Padding="5 0"/>
             <Button Content="Create" Command="{Binding CreateAuthorCommand}" 

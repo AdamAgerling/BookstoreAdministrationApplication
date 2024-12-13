@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:BookstoreAdmin.Dialog.Book" 
         xmlns:converters="clr-namespace:BookstoreAdmin.Converters"
         mc:Ignorable="d"
-        Title="Update book" Height="500" Width="400" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="#333">
+        Title="Update selected book" Height="500" Width="400" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="#333">
     <Window.Resources>
         <converters:DecimalConverter x:Key="DecimalConverter" />
     </Window.Resources>

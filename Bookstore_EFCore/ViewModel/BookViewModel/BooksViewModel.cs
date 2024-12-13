@@ -249,6 +249,7 @@ namespace BookstoreAdmin.ViewModel.BookViewModel
                             bookToUpdate.Image = bookToUpdate.Image;
 
                             await _dbContext.SaveChangesAsync();
+
                             MessageBox.Show($"The book \"{bookToUpdate.BookTitle}\" has been updated.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
                             var index = Books.IndexOf(SelectedBook);
@@ -287,13 +288,17 @@ namespace BookstoreAdmin.ViewModel.BookViewModel
             {
                 try
                 {
-                    _dbContext.Books.Remove(SelectedBook);
-                    _dbContext.SaveChanges();
+                    var bookToDelete = _dbContext.Books.Include(b => b.Author).FirstOrDefault(b => b.ISBN13 == SelectedBook.ISBN13);
+                    if (bookToDelete != null)
+                    {
+                        _dbContext.Books.Remove(bookToDelete);
+                        _dbContext.SaveChanges();
 
-                    Books.Remove(SelectedBook);
+                        Books.Remove(SelectedBook);
+                        SelectedBook = null;
 
-                    MessageBox.Show("Book deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    SelectedBook = null;
+                        MessageBox.Show("Book deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
                 }
                 catch (Exception ex)
                 {

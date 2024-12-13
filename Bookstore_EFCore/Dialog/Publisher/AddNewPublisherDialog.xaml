@@ -1,0 +1,44 @@
+﻿<Window x:Class="BookstoreAdmin.Dialog.Publisher.AddNewPublisherDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BookstoreAdmin.Dialog.Publisher"
+        mc:Ignorable="d"
+        Title="Add a new publisher" Height="300" Width="400" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="#333">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="10 10">
+            <TextBlock Foreground="White" Text="Publisher name (*):" 
+                Margin="1 0 10 2" FontWeight="Bold"/>
+            <TextBox Text="{Binding NewPublisherName, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+
+        <StackPanel Margin="10 10" Grid.Row="1">
+            <TextBlock Foreground="White" Text="Publisher country (*):" 
+                Margin="1 0 10 2" FontWeight="Bold"/>
+            <TextBox Text="{Binding NewPublisherCountry, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+
+        <StackPanel Margin="10 10" Grid.Row="2">
+            <TextBlock Foreground="White" Text="Year Founded:" Margin="1 0 10 2" FontWeight="Bold"/>
+            <TextBox Text="{Binding NewPublisherFoundedYear, UpdateSourceTrigger=PropertyChanged}" 
+                         MaxLength="4" 
+                         ToolTip="Enter a 4-digit year"
+                         PreviewTextInput="YearTextBox_PreviewTextInput" />
+        </StackPanel>
+
+        <WrapPanel Margin="0 15" Grid.Row="3" HorizontalAlignment="Center">
+            <Button Content="Cancel" Click="CancelButton_Click" 
+             Margin="0 0 30 0" Padding="5 0"/>
+            <Button Content="Create" Command="{Binding CreatePublisherCommand}" 
+             Padding="5 0"/>
+        </WrapPanel>
+    </Grid>
+</Window>

@@ -17,7 +17,9 @@
             <TabItem Header="Authors">
                 <view:AuthorsView />
             </TabItem>
-            <TabItem Header="Publishers"></TabItem>
+            <TabItem Header="Publishers">
+                <view:PublishersView />
+            </TabItem>
             <TabItem Header="Stores"></TabItem>
 
         </TabControl>

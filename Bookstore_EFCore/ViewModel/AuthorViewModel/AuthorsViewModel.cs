@@ -16,7 +16,7 @@ namespace BookstoreAdmin.ViewModel.AuthorViewModel
         private ObservableCollection<Book> _selectedAuthorBooks;
 
         public string DeathDateText => SelectedAuthor != null && SelectedAuthor.AuthorDeathDate.HasValue ? "Died: " : string.Empty;
-        public string DeathAtAge
+        public string AuthorAgeDisplay
         {
             get
             {
@@ -65,18 +65,8 @@ namespace BookstoreAdmin.ViewModel.AuthorViewModel
                 OnPropertyChanged(nameof(BookTitles));
                 OnPropertyChanged(nameof(AuthorAge));
                 OnPropertyChanged(nameof(DeathDateText));
-                OnPropertyChanged(nameof(DeathAtAge));
+                OnPropertyChanged(nameof(AuthorAgeDisplay));
                 UpdateSelectedAuthorBooks();
-            }
-        }
-
-        public ObservableCollection<Book> SelectedAuthorBooks
-        {
-            get => _selectedAuthorBooks;
-            set
-            {
-                _selectedAuthorBooks = value;
-                OnPropertyChanged(nameof(SelectedAuthorBooks));
             }
         }
 
@@ -88,11 +78,7 @@ namespace BookstoreAdmin.ViewModel.AuthorViewModel
         {
             _dbContext = new BookstoreDbContext();
 
-            Authors = new ObservableCollection<Author>(
-                _dbContext.Authors.
-                Include(a => a.Books).
-                ThenInclude(b => b.Publisher).
-                OrderBy(a => a.AuthorName).ToList());
+            LoadAuthors();
 
             DeleteAuthorCommand = new RelayCommand(DeleteAuthor, CanDeleteAuthor);
             OpenAddAuthorDialogCommand = new AsyncRelayCommand(OpenAddAuthorDialogAsync);
@@ -101,20 +87,37 @@ namespace BookstoreAdmin.ViewModel.AuthorViewModel
 
         private void UpdateSelectedAuthorBooks()
         {
-            SelectedAuthorBooks = SelectedAuthor != null
-                ? new ObservableCollection<Book>(SelectedAuthor.Books)
-                : new ObservableCollection<Book>();
+            if (SelectedAuthor == null)
+                return;
+
+            var authorId = SelectedAuthor.AuthorId;
+
+            SelectedAuthor.Books = new ObservableCollection<Book>(
+                _dbContext.Books
+                    .AsNoTracking()
+                    .Where(b => b.AuthorId == authorId)
+                    .Include(b => b.Publisher)
+                    .ToList());
+        }
+
+        public void LoadAuthors()
+        {
+            Authors = new ObservableCollection<Author>(
+              _dbContext.Authors
+              .AsNoTracking()
+              .Include(a => a.Books)
+              .ThenInclude(b => b.Publisher)
+              .OrderBy(a => a.AuthorName).ToList());
         }
 
         private async Task OpenAddAuthorDialogAsync()
         {
             var tcs = new TaskCompletionSource<Author>();
-            var dialogViewModel = new AddNewAuthorDialogViewModel(tcs);
+            var dialogViewModel = new AddNewAuthorDialogViewModel(tcs, _dbContext);
 
             dialogViewModel.AuthorCreated += author =>
             {
                 Authors.Add(author);
-                Debug.WriteLine($"Author added to observable collection: {author.AuthorName} {author.AuthorLastName}");
                 SelectedAuthor = author;
             };
 
@@ -148,13 +151,20 @@ namespace BookstoreAdmin.ViewModel.AuthorViewModel
             {
                 try
                 {
-                    _dbContext.Authors.Remove(SelectedAuthor);
-                    _dbContext.SaveChanges();
+                    _dbContext.Entry(SelectedAuthor).State = EntityState.Detached;
 
-                    Authors.Remove(SelectedAuthor);
+                    var authorToDelete = _dbContext.Authors.Include(a => a.Books).FirstOrDefault(a => a.AuthorId == SelectedAuthor.AuthorId);
 
-                    MessageBox.Show("Author deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    SelectedAuthor = null;
+                    if (authorToDelete != null)
+                    {
+                        _dbContext.Authors.Remove(authorToDelete);
+                        _dbContext.SaveChanges();
+
+                        Authors.Remove(SelectedAuthor);
+                        SelectedAuthor = null;
+
+                        MessageBox.Show("Author deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -186,8 +196,10 @@ namespace BookstoreAdmin.ViewModel.AuthorViewModel
                 {
                     try
                     {
+                        _dbContext.Entry(SelectedAuthor).State = EntityState.Detached;
 
-                        var authorToUpdate = _dbContext.Authors.FirstOrDefault(b => b.AuthorId == updatedAuthor.AuthorId);
+                        var authorToUpdate = _dbContext.Authors.FirstOrDefault(a => a.AuthorId == updatedAuthor.AuthorId);
+
                         if (authorToUpdate != null)
                         {
                             authorToUpdate.AuthorName = updatedAuthor.AuthorName;
@@ -197,6 +209,7 @@ namespace BookstoreAdmin.ViewModel.AuthorViewModel
                             authorToUpdate.AuthorDeathDate = updatedAuthor.AuthorDeathDate;
 
                             await _dbContext.SaveChangesAsync();
+
                             MessageBox.Show($"The author \"{authorToUpdate.AuthorName} {authorToUpdate.AuthorLastName}\" has been updated.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
                             var index = Authors.IndexOf(SelectedAuthor);

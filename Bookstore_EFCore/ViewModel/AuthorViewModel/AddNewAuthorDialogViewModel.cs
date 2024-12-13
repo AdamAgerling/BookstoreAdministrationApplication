@@ -1,14 +1,16 @@
 ﻿using BookstoreAdmin.Model;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
 namespace BookstoreAdmin.ViewModel.AuthorViewModel
 {
-    class AddNewAuthorDialogViewModel : BaseViewModel
+    public class AddNewAuthorDialogViewModel : BaseViewModel
     {
         private readonly TaskCompletionSource<Author> _tcs;
+        private readonly BookstoreDbContext _dbContext;
         private string _newAuthorName;
         private string _newAuthorLastName;
         private string _newAuthorBirthCountry;
@@ -69,11 +71,10 @@ namespace BookstoreAdmin.ViewModel.AuthorViewModel
 
         public ICommand CreateAuthorCommand { get; }
 
-
-        public AddNewAuthorDialogViewModel(TaskCompletionSource<Author> tcs)
+        public AddNewAuthorDialogViewModel(TaskCompletionSource<Author> tcs, BookstoreDbContext dbContext)
         {
             _tcs = tcs;
-
+            _dbContext = dbContext;
             CreateAuthorCommand = new RelayCommand(CreateAuthor);
         }
 
@@ -86,37 +87,35 @@ namespace BookstoreAdmin.ViewModel.AuthorViewModel
                     !string.IsNullOrEmpty(NewAuthorBirthCountry) &&
                     NewAuthorBirthDate != null)
                 {
-                    using (var db = new BookstoreDbContext())
+                    var existingAuthor = _dbContext.Authors.FirstOrDefault(a =>
+                        a.AuthorName == NewAuthorName &&
+                        a.AuthorLastName == NewAuthorLastName &&
+                        a.AuthorBirthDate == NewAuthorBirthDate);
+
+                    if (existingAuthor != null)
                     {
-                        var existingAuthor = db.Authors.FirstOrDefault(a =>
-                            a.AuthorName == NewAuthorName &&
-                            a.AuthorLastName == NewAuthorLastName &&
-                            a.AuthorBirthDate == NewAuthorBirthDate);
-
-                        if (existingAuthor != null)
-                        {
-                            Debug.WriteLine("An author with the same name and birth date already exists. Aborting creation.");
-                            return;
-                        }
-
-                        var newAuthor = new Author
-                        {
-                            AuthorName = NewAuthorName,
-                            AuthorLastName = NewAuthorLastName,
-                            AuthorBirthCountry = NewAuthorBirthCountry,
-                            AuthorBirthDate = NewAuthorBirthDate.Value,
-                            AuthorDeathDate = NewAuthorDeathDate
-                        };
-
-                        db.Authors.Add(newAuthor);
-                        await db.SaveChangesAsync();
-
-                        Debug.WriteLine($"New author added successfully: {newAuthor.AuthorName} {newAuthor.AuthorLastName}");
-
-                        AuthorCreated?.Invoke(newAuthor);
-                        _tcs.SetResult(newAuthor);
-                        Application.Current.Windows.OfType<Window>().SingleOrDefault(w => w.IsActive)?.Close();
+                        Debug.WriteLine("An author with the same name and birth date already exists. Aborting creation.");
+                        return;
                     }
+
+                    var newAuthor = new Author
+                    {
+                        AuthorName = NewAuthorName,
+                        AuthorLastName = NewAuthorLastName,
+                        AuthorBirthCountry = NewAuthorBirthCountry,
+                        AuthorBirthDate = NewAuthorBirthDate.Value,
+                        AuthorDeathDate = NewAuthorDeathDate
+                    };
+
+                    _dbContext.Authors.Add(newAuthor);
+                    await _dbContext.SaveChangesAsync();
+                    _dbContext.Entry(newAuthor).State = EntityState.Detached;
+
+                    Debug.WriteLine($"New author added successfully: {newAuthor.AuthorName} {newAuthor.AuthorLastName}");
+
+                    AuthorCreated?.Invoke(newAuthor);
+                    _tcs.SetResult(newAuthor);
+                    Application.Current.Windows.OfType<Window>().SingleOrDefault(w => w.IsActive)?.Close();
                 }
                 else
                 {

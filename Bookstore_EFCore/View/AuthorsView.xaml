@@ -53,7 +53,7 @@
             </WrapPanel>
             <WrapPanel Margin="0 10">
                 <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="Age: "/>
-                <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding DeathAtAge}" Margin="0 0 0 5"/>
+                <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding AuthorAgeDisplay}" Margin="0 0 0 5"/>
             </WrapPanel>
             <WrapPanel Margin="0 0 0 10">
                 <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="Country: "/>
@@ -73,7 +73,7 @@
 
             <StackPanel>
                 <TextBlock Margin="0 0 0 5" Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding BookTitles}" />
-                <DataGrid ItemsSource="{Binding SelectedAuthorBooks}" 
+                <DataGrid ItemsSource="{Binding SelectedAuthor.Books}" 
                           AutoGenerateColumns="False" 
                           CanUserAddRows="False" 
                           CanUserResizeColumns="False" 

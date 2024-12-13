@@ -1,0 +1,89 @@
+﻿<UserControl x:Class="BookstoreAdmin.View.PublishersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BookstoreAdmin.View" xmlns:converters="clr-namespace:BookstoreAdmin.Converters" xmlns:viewmodel="clr-namespace:BookstoreAdmin.ViewModel.PublisherViewModel"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" FontSize="18">
+    <UserControl.DataContext>
+        <viewmodel:PublishersViewModel/>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Grid Background="#333">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" Margin="5 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ListBox Background="#333" Margin="0 0 0 10"
+                 ItemsSource="{Binding Publishers}" 
+                 SelectedItem="{Binding SelectedPublisher, Mode=TwoWay}" 
+                 Grid.Row="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Foreground="White" Text="{Binding PublisherName}" FontSize="16"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" Margin="10 10">
+                <Button Content="Delete Publisher" Command="{Binding DeletePublisherCommand}" Margin="0 0 10 0" Padding="5"/>
+                <Button Content="Add Publisher" Command="{Binding OpenAddPublisherDialogCommand}" Margin="0 0 10 0" Padding="5"/>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Column="1" Margin="10 10" Visibility="{Binding SelectedPublisher, Converter={StaticResource NullToVisibilityConverter}}">
+            <WrapPanel HorizontalAlignment="Center" Margin="0 10">
+                <TextBlock Foreground="White" FontSize="24" FontWeight="Bold" Text="Publisher: "/>
+                <TextBlock Foreground="White" FontSize="24" FontWeight="Bold" Text="{Binding SelectedPublisher.PublisherName}" Margin="0 0 0 5"/>
+            </WrapPanel>
+            <WrapPanel Margin="0 10">
+                <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="Country: "/>
+                <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding SelectedPublisher.PublisherCountry}" Margin="0 0 0 5"/>
+            </WrapPanel>
+            <WrapPanel Margin="0 0 0 10">
+                <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="Founded year: "/>
+                <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding SelectedPublisher.PublisherFoundedYear}" Margin="0 0 0 5"/>
+            </WrapPanel>
+
+            <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <Button Content="Update Publisher" Command="{Binding OpenUpdatePublisherDialogCommand}" Margin="10 0 0 0" />
+            </WrapPanel>
+
+            <StackPanel>
+                <TextBlock Margin="0 0 0 5" Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding BookTitles}" />
+                <DataGrid ItemsSource="{Binding SelectedPublisher.Books}" 
+                          AutoGenerateColumns="False" 
+                          CanUserAddRows="False" 
+                          CanUserResizeColumns="False" 
+                          HorizontalAlignment="Stretch" 
+                          VerticalAlignment="Stretch" 
+                          ColumnWidth="*" 
+                          IsReadOnly="True"
+                          HeadersVisibility="Column">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ISBN" 
+                                        Binding="{Binding ISBN13}"/>
+                        <DataGridTextColumn Header="Books" Binding="{Binding BookTitle}"/>
+                        <DataGridTextColumn Header="Release date" 
+                                        Binding="{Binding BookRelease, StringFormat='{}{0:yyyy-MM-dd}'}"/>
+                        <DataGridTextColumn Header="Author" 
+                                        Binding="{Binding Author.FullName}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>
