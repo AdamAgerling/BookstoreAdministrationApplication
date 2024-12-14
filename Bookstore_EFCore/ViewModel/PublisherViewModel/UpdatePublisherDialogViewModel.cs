@@ -33,10 +33,9 @@ namespace BookstoreAdmin.ViewModel.PublisherViewModel
         {
             if (string.IsNullOrWhiteSpace(NewPublisherName) || NewPublisherCountry == null)
             {
-                MessageBox.Show("All required fields must be filled to update the author.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("All required fields must be filled to update the publisher.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-
 
             var updatedPublisher = new Publisher
             {

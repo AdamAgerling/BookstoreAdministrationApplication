@@ -83,6 +83,7 @@ namespace BookstoreAdmin.ViewModel.PublisherViewModel
         {
             Publishers = new ObservableCollection<Publisher>(
                 _dbContext.Publishers
+                .AsNoTracking()
                 .Include(p => p.Books)
                 .ThenInclude(b => b.Author)
                 .OrderBy(p => p.PublisherName)
@@ -201,7 +202,7 @@ namespace BookstoreAdmin.ViewModel.PublisherViewModel
                         Publishers.Remove(SelectedPublisher);
                         SelectedPublisher = null;
 
-                        MessageBox.Show("Author deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("Publisher deleted successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
                 catch (Exception ex)

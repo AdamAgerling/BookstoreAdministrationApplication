@@ -1,0 +1,93 @@
+﻿<UserControl x:Class="BookstoreAdmin.View.StoresView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BookstoreAdmin.View" 
+             xmlns:converters="clr-namespace:BookstoreAdmin.Converters" 
+             xmlns:viewmodel="clr-namespace:BookstoreAdmin.ViewModel.StoreViewModel"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" FontSize="18">
+    <UserControl.DataContext>
+        <viewmodel:StoresViewModel/>
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Grid Background="#333">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0" Margin="5 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ListBox Background="#333" Margin="0 0 0 10"
+                 ItemsSource="{Binding Stores}" 
+                 SelectedItem="{Binding SelectedStore, Mode=TwoWay}" 
+                 Grid.Row="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Foreground="White" Text="{Binding StoreNameAndStreet}" FontSize="16"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" Margin="10 10">
+                <Button Content="Delete Publisher" Command="{Binding DeleteStoreCommand}" Margin="0 0 10 0" Padding="5"/>
+                <Button Content="Add Publisher" Command="{Binding OpenAddStoreDialogCommand}" Margin="0 0 10 0" Padding="5"/>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Column="1" Margin="10 10" Visibility="{Binding SelectedStore, Converter={StaticResource NullToVisibilityConverter}}">
+            <WrapPanel HorizontalAlignment="Center" Margin="0 10">
+                <TextBlock Foreground="White" FontSize="24" FontWeight="Bold" Text="Store: "/>
+                <TextBlock Foreground="White" FontSize="24" FontWeight="Bold" Text="{Binding SelectedStore.StoreName}" Margin="0 0 0 5"/>
+            </WrapPanel>
+            <WrapPanel Margin="0 10">
+                <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="Address: "/>
+                <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding SelectedStore.StoreStreetAddress}" Margin="0 0 0 5"/>
+            </WrapPanel>
+
+            <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <Button Content="Update Store" Command="{Binding OpenUpdateStoreDialogCommand}" Margin="10 0 0 0" />
+            </WrapPanel>
+
+            <StackPanel>
+                <TextBlock Margin="0 0 0 5" Foreground="White" FontSize="20" FontWeight="Bold" Text="Inventory in selected store" />
+                <ScrollViewer Grid.Row="0">
+                    <DataGrid ItemsSource="{Binding SelectedStoreInventory}" 
+                              AutoGenerateColumns="False" 
+                              CanUserAddRows="False" 
+                              CanUserResizeColumns="False" 
+                              HorizontalAlignment="Stretch" 
+                              VerticalAlignment="Stretch" 
+                              ColumnWidth="*" 
+                              IsReadOnly="True"
+                              HeadersVisibility="Column"
+                              MaxHeight="400">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ISBN" Binding="{Binding Book.ISBN13}" />
+                            <DataGridTextColumn Header="Book Title" Binding="{Binding Book.BookTitle}" />
+                            <DataGridTextColumn Header="Author" Binding="{Binding Book.Author.FullName}" />
+                            <DataGridTextColumn Header="Quantity" Binding="{Binding BookQuantity}" />
+                            <DataGridTextColumn Header="Inventory value" Binding="{Binding InventoryValue, StringFormat=C}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </ScrollViewer>
+
+                <WrapPanel Grid.Row="1" Margin="0 10" HorizontalAlignment="Center">
+                    <Button Content="Add to stock" Command="{Binding AddBookToStockDialogCommand}" Margin="10 0 0 0"/>
+                    <Button Content="Remove from stock" Command="{Binding RemoveFromBookStockDialogCommand}" Margin="10 0 0 0" />
+                </WrapPanel>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

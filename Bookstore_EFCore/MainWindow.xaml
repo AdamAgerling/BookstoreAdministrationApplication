@@ -20,7 +20,9 @@
             <TabItem Header="Publishers">
                 <view:PublishersView />
             </TabItem>
-            <TabItem Header="Stores"></TabItem>
+            <TabItem Header="Stores">
+                <view:StoresView />
+            </TabItem>
 
         </TabControl>
 
