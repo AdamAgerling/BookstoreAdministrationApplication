@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
+using static BookstoreAdmin.ViewModel.StoreViewModel.ManageExistingBookInStoreDialogViewModel;
 
 namespace BookstoreAdmin.ViewModel.StoreViewModel
 {
@@ -77,6 +78,8 @@ namespace BookstoreAdmin.ViewModel.StoreViewModel
         public ICommand DeleteStoreCommand { get; }
         public ICommand OpenAddStoreDialogCommand { get; }
         public ICommand OpenUpdateStoreDialogCommand { get; }
+        public ICommand OpenAddExistingBookToStoreDialogCommand { get; }
+        public ICommand OpenRemoveExistingBookFromStoreDialogCommand { get; }
 
 
         public StoresViewModel()
@@ -88,6 +91,8 @@ namespace BookstoreAdmin.ViewModel.StoreViewModel
             DeleteStoreCommand = new RelayCommand(DeleteStore, CanDeleteStore);
             OpenAddStoreDialogCommand = new AsyncRelayCommand(OpenAddStoreDialogAsync);
             OpenUpdateStoreDialogCommand = new AsyncRelayCommand(OpenUpdateStoreDialogAsync);
+            OpenAddExistingBookToStoreDialogCommand = new AsyncRelayCommand(OpenAddExistingBookToStoreDialogAsync);
+            OpenRemoveExistingBookFromStoreDialogCommand = new AsyncRelayCommand(OpenRemoveExistingBookFromStoreDialogAsync);
         }
 
         private void UpdateSelectedStoreInventory()
@@ -241,6 +246,96 @@ namespace BookstoreAdmin.ViewModel.StoreViewModel
             return SelectedStore != null;
         }
 
+        private async Task OpenAddExistingBookToStoreDialogAsync()
+        {
+            if (SelectedStore == null)
+            {
+                MessageBox.Show("Please select a store first.", " No Store Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var tcs = new TaskCompletionSource<(Book, int, bool)>();
+            var dialogViewModel = new ManageExistingBookInStoreDialogViewModel(new ObservableCollection<Book>(_dbContext.Books), tcs, DialogMode.Add);
+
+            var dialog = new ManageExistingBookInStoreDialog
+            {
+                DataContext = dialogViewModel
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var (selectedBook, quantity, _) = await tcs.Task;
+
+                var inventory = _dbContext.InventoryBalances
+                    .FirstOrDefault(ib => ib.StoreId == SelectedStore.StoreId && ib.ISBN13 == selectedBook.ISBN13);
+
+                if (inventory != null)
+                {
+                    inventory.BookQuantity += quantity;
+                }
+                else
+                {
+                    _dbContext.InventoryBalances.Add(new InventoryBalance
+                    {
+                        StoreId = SelectedStore.StoreId,
+                        ISBN13 = selectedBook.ISBN13,
+                        BookQuantity = quantity
+                    });
+                }
+                await _dbContext.SaveChangesAsync();
+                UpdateSelectedStoreInventory();
+                MessageBox.Show("Book added to store invetory.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+        private async Task OpenRemoveExistingBookFromStoreDialogAsync()
+        {
+            if (SelectedStore == null)
+            {
+                MessageBox.Show("Please select a store.", "No Store Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var tcs = new TaskCompletionSource<(Book, int, bool)>();
+            var dialogViewModel = new ManageExistingBookInStoreDialogViewModel(
+                new ObservableCollection<Book>(_dbContext.Books.ToList()), tcs, DialogMode.Remove);
+
+            var dialog = new ManageExistingBookInStoreDialog
+            {
+                DataContext = dialogViewModel
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var (selectedBook, quantityToRemove, removeEntirely) = await tcs.Task;
+
+                var inventory = _dbContext.InventoryBalances
+                    .FirstOrDefault(ib => ib.StoreId == SelectedStore.StoreId && ib.ISBN13 == selectedBook.ISBN13);
+
+                if (inventory != null)
+                {
+                    if (removeEntirely)
+                    {
+                        _dbContext.InventoryBalances.Remove(inventory);
+                        MessageBox.Show("The book was completely removed from the store's inventory.", "Removed", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        inventory.BookQuantity -= quantityToRemove;
+                        if (inventory.BookQuantity < 0)
+                            inventory.BookQuantity = 0;
+
+                        MessageBox.Show("The book quantity was updated.", "Updated", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+
+                    await _dbContext.SaveChangesAsync();
+                    UpdateSelectedStoreInventory();
+                }
+                else
+                {
+                    MessageBox.Show("This book does not exist in the store's inventory.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
     }
 }
 

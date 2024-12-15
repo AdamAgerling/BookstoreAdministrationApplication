@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DB_Backup\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="Assets\no_image.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

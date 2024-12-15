@@ -31,7 +31,6 @@ namespace BookstoreAdmin.ViewModel.BookViewModel
 
             DialogTitle = isRemovingStock ? "Remove from Stock" : "Add to Stock";
             DialogButtonText = isRemovingStock ? "Remove" : "Add";
-
         }
 
         private void UpdateStock(Window window)

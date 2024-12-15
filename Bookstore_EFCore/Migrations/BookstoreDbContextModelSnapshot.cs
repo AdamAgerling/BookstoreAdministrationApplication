@@ -50,7 +50,7 @@ namespace BookstoreAdmin.Migrations
 
                     b.HasKey("AuthorId");
 
-                    b.ToTable("Authors");
+                    b.ToTable("Authors", (string)null);
                 });
 
             modelBuilder.Entity("BookstoreAdmin.Model.Book", b =>
@@ -98,7 +98,7 @@ namespace BookstoreAdmin.Migrations
 
                     b.HasIndex("PublisherId");
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("BookstoreAdmin.Model.BookLanguage", b =>
@@ -115,7 +115,7 @@ namespace BookstoreAdmin.Migrations
 
                     b.HasKey("LanguageId");
 
-                    b.ToTable("BookLanguages");
+                    b.ToTable("BookLanguages", (string)null);
                 });
 
             modelBuilder.Entity("BookstoreAdmin.Model.Image", b =>
@@ -130,7 +130,7 @@ namespace BookstoreAdmin.Migrations
 
                     b.HasKey("ImageId");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("BookstoreAdmin.Model.InventoryBalance", b =>
@@ -148,7 +148,7 @@ namespace BookstoreAdmin.Migrations
 
                     b.HasIndex("ISBN13");
 
-                    b.ToTable("InventoryBalances");
+                    b.ToTable("InventoryBalances", (string)null);
                 });
 
             modelBuilder.Entity("BookstoreAdmin.Model.Publisher", b =>
@@ -172,7 +172,7 @@ namespace BookstoreAdmin.Migrations
 
                     b.HasKey("PublisherId");
 
-                    b.ToTable("Publishers");
+                    b.ToTable("Publishers", (string)null);
                 });
 
             modelBuilder.Entity("BookstoreAdmin.Model.PurchaseHistory", b =>
@@ -205,7 +205,7 @@ namespace BookstoreAdmin.Migrations
 
                     b.HasIndex("StoreId");
 
-                    b.ToTable("PurchaseHistories");
+                    b.ToTable("PurchaseHistories", (string)null);
                 });
 
             modelBuilder.Entity("BookstoreAdmin.Model.Store", b =>
@@ -226,7 +226,7 @@ namespace BookstoreAdmin.Migrations
 
                     b.HasKey("StoreId");
 
-                    b.ToTable("Stores");
+                    b.ToTable("Stores", (string)null);
                 });
 
             modelBuilder.Entity("BookstoreAdmin.Model.Book", b =>
