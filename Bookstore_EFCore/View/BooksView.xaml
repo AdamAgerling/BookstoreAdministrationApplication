@@ -15,7 +15,7 @@
         <converters:InventoryValueConverter x:Key="InventoryValueConverter" />
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
-    
+
     <Grid Background="#333">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -29,9 +29,9 @@
             </Grid.RowDefinitions>
 
             <ListBox Background="#333" Margin="0 0 0 10"
-                 ItemsSource="{Binding Books}" 
-                 SelectedItem="{Binding SelectedBook, Mode=TwoWay}" 
-                 Grid.Row="0">
+                     ItemsSource="{Binding Books}" 
+                     SelectedItem="{Binding SelectedBook, Mode=TwoWay}" 
+                     Grid.Row="0">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
@@ -47,50 +47,57 @@
             </StackPanel>
         </Grid>
 
-        <StackPanel Grid.Column="1" Margin="10 10" Visibility="{Binding SelectedBook, Converter={StaticResource NullToVisibilityConverter}}">
-            <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding SelectedBook.BookTitle}" Margin="0 0 0 5"/>
-            <WrapPanel>
-                <TextBlock Foreground="White" Text="{Binding SelectedBook.Author.AuthorName}" FontSize="16"/>
-                <TextBlock Foreground="White" Text="{Binding SelectedBook.Author.AuthorLastName}" Margin="5 0 0 0" FontSize="16"/>
-            </WrapPanel>
+        <Grid Grid.Column="1" Margin="10 10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-            <Grid Margin="0 0 10 10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <WrapPanel Grid.Column="0" Width="250" Height="365" HorizontalAlignment="Left">
-                    <Image Source="{Binding BookImage}" Width="250" Height="365" Stretch="UniformToFill" />
+            <StackPanel Grid.Row="0" Visibility="{Binding SelectedBook, Converter={StaticResource NullToVisibilityConverter}}">
+                <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding SelectedBook.BookTitle}" Margin="0 0 0 5"/>
+                <WrapPanel>
+                    <TextBlock Foreground="White" Text="{Binding SelectedBook.Author.AuthorName}" FontSize="16"/>
+                    <TextBlock Foreground="White" Text="{Binding SelectedBook.Author.AuthorLastName}" Margin="5 0 0 0" FontSize="16"/>
                 </WrapPanel>
 
-                <StackPanel Grid.Column="1" Margin="10 0 0 0" Grid.Row="0">
-                    <WrapPanel>
-                        <TextBlock Foreground="White" Text="ISBN:" Margin="10 0 0 0"/>
-                        <TextBlock Foreground="White" Text="{Binding SelectedBook.ISBN13}"  Margin="5 0"/>
+                <Grid Margin="0 0 10 10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <WrapPanel Grid.Column="0" Width="250" Height="365" HorizontalAlignment="Left">
+                        <Image Source="{Binding BookImage}" Width="250" Height="365" Stretch="UniformToFill" />
                     </WrapPanel>
 
-                    <WrapPanel Margin="10 50 0 10">
-                        <TextBlock Foreground="White" Text="Publisher:"/>
-                        <TextBlock Foreground="White" Text="{Binding SelectedBook.Publisher.PublisherName}" Margin="10 0"/>
-                    </WrapPanel>
+                    <StackPanel Grid.Column="1" Margin="10 0 0 0">
+                        <WrapPanel>
+                            <TextBlock Foreground="White" Text="ISBN:" Margin="10 0 0 0"/>
+                            <TextBlock Foreground="White" Text="{Binding SelectedBook.ISBN13}"  Margin="5 0"/>
+                        </WrapPanel>
 
-                    <WrapPanel Margin="10 50 0 10">
-                        <TextBlock Foreground="White" Text="Language:" />
-                        <TextBlock Foreground="White" Text="{Binding SelectedBook.Language.LanguageName}" Margin="10 0"/>
-                    </WrapPanel>
+                        <WrapPanel Margin="10 50 0 10">
+                            <TextBlock Foreground="White" Text="Publisher:"/>
+                            <TextBlock Foreground="White" Text="{Binding SelectedBook.Publisher.PublisherName}" Margin="10 0"/>
+                        </WrapPanel>
 
-                    <WrapPanel Margin="10 50 0 10">
-                        <TextBlock Foreground="White" Text="Price:" />
-                        <TextBlock Foreground="White" Text="{Binding SelectedBook.BookPrice, StringFormat='{}{0:C}'}" Margin="10 0"/>
-                    </WrapPanel>
-                    <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                        <Button Content="Update Book" Command="{Binding OpenUpdateBookDialogCommand}" Margin="10 0 0 0" />
-                    </WrapPanel>
-                </StackPanel>
-            </Grid>
+                        <WrapPanel Margin="10 50 0 10">
+                            <TextBlock Foreground="White" Text="Language:" />
+                            <TextBlock Foreground="White" Text="{Binding SelectedBook.Language.LanguageName}" Margin="10 0"/>
+                        </WrapPanel>
 
-            <Grid>
+                        <WrapPanel Margin="10 50 0 10">
+                            <TextBlock Foreground="White" Text="Price:" />
+                            <TextBlock Foreground="White" Text="{Binding SelectedBook.BookPrice, StringFormat='{}{0:C}'}" Margin="10 0"/>
+                        </WrapPanel>
+                        <WrapPanel HorizontalAlignment="Right">
+                            <Button Content="Update Book" Command="{Binding OpenUpdateBookDialogCommand}" Margin="10 0 0 0" />
+                        </WrapPanel>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+
+            <Grid Grid.Row="1" Visibility="{Binding SelectedBook, Converter={StaticResource NullToVisibilityConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
@@ -98,15 +105,17 @@
 
                 <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
                     <DataGrid ItemsSource="{Binding InventoryBalances}" 
-                  AutoGenerateColumns="False" 
-                  CanUserAddRows="False" 
-                  CanUserResizeColumns="False" 
-                  HorizontalAlignment="Stretch" 
-                  VerticalAlignment="Stretch" 
-                  ColumnWidth="*" 
-                  IsReadOnly="True"
-                  HeadersVisibility="Column"
-                  MaxHeight="300">
+                              AutoGenerateColumns="False" 
+                              CanUserAddRows="False" 
+                              CanUserResizeColumns="False" 
+                              HorizontalAlignment="Stretch" 
+                              VerticalAlignment="Stretch" 
+                              ColumnWidth="*" 
+                              IsReadOnly="True"
+                              HeadersVisibility="Column"
+                              MaxHeight="300"
+                              Background="#333"
+                              >
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Store" Binding="{Binding Store.StoreName}"/>
                             <DataGridTextColumn Header="Address" Binding="{Binding Store.StoreStreetAddress}"/>
@@ -134,6 +143,6 @@
                     <Button Content="Remove from stock" Command="{Binding RemoveFromBookStockDialogCommand}" Margin="10 0" />
                 </WrapPanel>
             </Grid>
-        </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>
