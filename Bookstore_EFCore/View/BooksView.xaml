@@ -96,7 +96,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <ScrollViewer Grid.Row="0">
+                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
                     <DataGrid ItemsSource="{Binding InventoryBalances}" 
                   AutoGenerateColumns="False" 
                   CanUserAddRows="False" 
@@ -105,7 +105,8 @@
                   VerticalAlignment="Stretch" 
                   ColumnWidth="*" 
                   IsReadOnly="True"
-                  HeadersVisibility="Column" MaxHeight="300">
+                  HeadersVisibility="Column"
+                  MaxHeight="300">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Store" Binding="{Binding Store.StoreName}"/>
                             <DataGridTextColumn Header="Address" Binding="{Binding Store.StoreStreetAddress}"/>
@@ -128,9 +129,9 @@
                     </DataGrid>
                 </ScrollViewer>
 
-                <WrapPanel Grid.Row="1" Margin="0 10" HorizontalAlignment="Center">
-                    <Button Content="Add to stock" Command="{Binding AddBookToStockDialogCommand}" Margin="10 0 0 0"/>
-                    <Button Content="Remove from stock" Command="{Binding RemoveFromBookStockDialogCommand}" Margin="10 0 0 0" />
+                <WrapPanel Grid.Row="1" HorizontalAlignment="Center" Margin="10">
+                    <Button Content="Add to stock" Command="{Binding AddBookToStockDialogCommand}" Margin="10 0"/>
+                    <Button Content="Remove from stock" Command="{Binding RemoveFromBookStockDialogCommand}" Margin="10 0" />
                 </WrapPanel>
             </Grid>
         </StackPanel>
