@@ -18,6 +18,10 @@ namespace BookstoreAdmin.ViewModel.StoreViewModel
         private string _newStoreStreetAddress;
         private ObservableCollection<InventoryBalance> _selectedStoreInventory;
 
+        public string StoreTitles => SelectedStore != null
+                ? $"{SelectedStore.StoreNameAndStreet}'s current inventory"
+                : "No store selected";
+
         public ObservableCollection<InventoryBalance> SelectedStoreInventory
         {
             get => _selectedStoreInventory;
@@ -70,6 +74,7 @@ namespace BookstoreAdmin.ViewModel.StoreViewModel
             {
                 _selectedStore = value;
                 OnPropertyChanged(nameof(SelectedStore));
+                OnPropertyChanged(nameof(StoreTitles));
                 (DeleteStoreCommand as RelayCommand)?.NotifyCanExecuteChanged();
                 UpdateSelectedStoreInventory();
             }

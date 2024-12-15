@@ -35,6 +35,10 @@ namespace BookstoreAdmin.ViewModel.PublisherViewModel
         public string PublisherFoundedYearDisplay =>
        SelectedPublisher?.PublisherFoundedYear?.ToString() ?? "Unknown";
 
+        public string PublishedTitles => SelectedPublisher != null
+        ? $"{SelectedPublisher.PublisherName}'s published books in our system"
+        : "No publisher selected";
+
         public Publisher SelectedPublisher
         {
             get => _selectedPublisher;
@@ -42,6 +46,7 @@ namespace BookstoreAdmin.ViewModel.PublisherViewModel
             {
                 _selectedPublisher = value;
                 OnPropertyChanged(nameof(SelectedPublisher));
+                OnPropertyChanged(nameof(PublishedTitles));
                 OnPropertyChanged(PublisherFoundedYearDisplay);
                 (DeletePublisherCommand as RelayCommand)?.NotifyCanExecuteChanged();
                 UpdateSelectedPublisherBooks();

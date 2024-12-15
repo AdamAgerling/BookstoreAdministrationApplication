@@ -3,11 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:BookstoreAdmin.View" 
              xmlns:converters="clr-namespace:BookstoreAdmin.Converters" 
              xmlns:viewmodel="clr-namespace:BookstoreAdmin.ViewModel.StoreViewModel"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" FontSize="18">
+             mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800" FontSize="18">
+
     <UserControl.DataContext>
         <viewmodel:StoresViewModel/>
     </UserControl.DataContext>
@@ -28,66 +27,78 @@
             </Grid.RowDefinitions>
 
             <ListBox Background="#333" Margin="0 0 0 10"
-                 ItemsSource="{Binding Stores}" 
-                 SelectedItem="{Binding SelectedStore, Mode=TwoWay}" 
-                 Grid.Row="0">
+                     ItemsSource="{Binding Stores}" 
+                     SelectedItem="{Binding SelectedStore, Mode=TwoWay}" 
+                     Grid.Row="0">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel>
-                            <TextBlock Foreground="White" Text="{Binding StoreNameAndStreet}" FontSize="16"/>
-                        </StackPanel>
+                        <TextBlock Foreground="White" Text="{Binding StoreNameAndStreet}" FontSize="16"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
 
             <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" Margin="10 10">
-                <Button Content="Delete Store" Command="{Binding DeleteStoreCommand}" Margin="0 0 10 0" Padding="5"/>
-                <Button Content="Add Store" Command="{Binding OpenAddStoreDialogCommand}" Margin="0 0 10 0" Padding="5"/>
+                <Button Content="Delete Store" Command="{Binding DeleteStoreCommand}"  Margin="0 10 10 0" Padding="5"/>
+                <Button Content="Add Store" Command="{Binding OpenAddStoreDialogCommand}"  Margin="0 10 0 0" Padding="5"/>
             </StackPanel>
         </Grid>
 
-        <StackPanel Grid.Column="1" Margin="10 10" Visibility="{Binding SelectedStore, Converter={StaticResource NullToVisibilityConverter}}">
-            <WrapPanel HorizontalAlignment="Center" Margin="0 10">
-                <TextBlock Foreground="White" FontSize="24" FontWeight="Bold" Text="Store: "/>
-                <TextBlock Foreground="White" FontSize="24" FontWeight="Bold" Text="{Binding SelectedStore.StoreName}" Margin="0 0 0 5"/>
-            </WrapPanel>
-            <WrapPanel Margin="0 10">
-                <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="Address: "/>
-                <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding SelectedStore.StoreStreetAddress}" Margin="0 0 0 5"/>
-            </WrapPanel>
+        <Grid Grid.Column="1" Margin="10 10" Visibility="{Binding SelectedStore, Converter={StaticResource NullToVisibilityConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-            <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                <Button Content="Update Store" Command="{Binding OpenUpdateStoreDialogCommand}" Margin="10 0 0 0" />
-            </WrapPanel>
+            <StackPanel Grid.Row="0">
+                <WrapPanel HorizontalAlignment="Center" Margin="0 10">
+                    <TextBlock Foreground="White" FontSize="24" FontWeight="Bold" Text="Store: "/>
+                    <TextBlock Foreground="White" FontSize="24" FontWeight="Bold" Text="{Binding SelectedStore.StoreName}" Margin="0 0 0 5"/>
+                </WrapPanel>
+                <WrapPanel Margin="0 10">
+                    <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="Address: "/>
+                    <TextBlock Foreground="White" FontSize="20" FontWeight="Bold" Text="{Binding SelectedStore.StoreStreetAddress}" Margin="0 0 0 5"/>
+                </WrapPanel>
+                <WrapPanel HorizontalAlignment="Right">
+                    <Button Content="Update Store" Command="{Binding OpenUpdateStoreDialogCommand}"  Margin="0 10 0 0" Padding="5"/>
+                </WrapPanel>
+            </StackPanel>
 
-            <StackPanel>
-                <TextBlock Margin="0 0 0 5" Foreground="White" FontSize="20" FontWeight="Bold" Text="Inventory in selected store" />
-                <ScrollViewer Grid.Row="0">
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="{Binding StoreTitles}" Foreground="White" FontSize="20" FontWeight="Bold"/>
+                    <ScrollViewer  VerticalScrollBarVisibility="Auto">
                     <DataGrid ItemsSource="{Binding SelectedStoreInventory}" 
-                              AutoGenerateColumns="False" 
-                              CanUserAddRows="False" 
-                              CanUserResizeColumns="False" 
-                              HorizontalAlignment="Stretch" 
-                              VerticalAlignment="Stretch" 
-                              ColumnWidth="*" 
-                              IsReadOnly="True"
-                              HeadersVisibility="Column"
-                              MaxHeight="400">
+                             AutoGenerateColumns="False" 
+                             CanUserAddRows="False" 
+                             CanUserResizeColumns="False" 
+                             HorizontalAlignment="Stretch" 
+                             VerticalAlignment="Stretch" 
+                             ColumnWidth="*" 
+                             IsReadOnly="True"
+                             HeadersVisibility="Column"
+                             MaxHeight="500"
+                             Background="#333">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="ISBN" Binding="{Binding Book.ISBN13}" />
-                            <DataGridTextColumn Header="Book Title" Binding="{Binding Book.BookTitle}" />
-                            <DataGridTextColumn Header="Author" Binding="{Binding Book.Author.FullName}" />
-                            <DataGridTextColumn Header="Quantity" Binding="{Binding BookQuantity}" />
-                            <DataGridTextColumn Header="Inventory value" Binding="{Binding InventoryValue, StringFormat=C}" />
+                            <DataGridTextColumn Header="ISBN" Binding="{Binding Book.ISBN13}"/>
+                            <DataGridTextColumn Header="Book Title" Binding="{Binding Book.BookTitle}"/>
+                            <DataGridTextColumn Header="Author" Binding="{Binding Book.Author.FullName}"/>
+                            <DataGridTextColumn Header="Quantity" Binding="{Binding BookQuantity}"/>
+                            <DataGridTextColumn Header="Inventory Value" Binding="{Binding InventoryValue, StringFormat=C}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </ScrollViewer>
+                </StackPanel>
 
-                <WrapPanel Grid.Row="1" Margin="0 10" HorizontalAlignment="Center">
-                    <Button Content="Add book to inventory" Command="{Binding OpenAddExistingBookToStoreDialogCommand}" Margin="10 0 0 0"/>
-                    <Button Content="Remove from inventory" Command="{Binding OpenRemoveExistingBookFromStoreDialogCommand}" Margin="10 0 0 0" />
+                <WrapPanel Grid.Row="1" HorizontalAlignment="Center" Margin="10">
+                    <Button Content="Add Book to Inventory" Command="{Binding OpenAddExistingBookToStoreDialogCommand}"  Margin="0 10 10 0" Padding="5"/>
+                    <Button Content="Remove Book from Inventory" Command="{Binding OpenRemoveExistingBookFromStoreDialogCommand}" Margin="0 10 0 0" Padding="5"/>
                 </WrapPanel>
-            </StackPanel>
-        </StackPanel>
+            </Grid>
+        </Grid>
     </Grid>
 </UserControl>
