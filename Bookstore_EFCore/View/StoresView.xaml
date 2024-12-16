@@ -95,8 +95,8 @@
                 </StackPanel>
 
                 <WrapPanel Grid.Row="1" HorizontalAlignment="Center" Margin="10">
-                    <Button Content="Add Book to Inventory" Command="{Binding OpenAddExistingBookToStoreDialogCommand}"  Margin="0 10 10 0" Padding="5"/>
                     <Button Content="Remove Book from Inventory" Command="{Binding OpenRemoveExistingBookFromStoreDialogCommand}" Margin="0 10 0 0" Padding="5"/>
+                    <Button Content="Add Book to Inventory" Command="{Binding OpenAddExistingBookToStoreDialogCommand}"  Margin="0 10 10 0" Padding="5"/>
                 </WrapPanel>
             </Grid>
         </Grid>
